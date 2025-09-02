@@ -1,2 +1,8 @@
-# dlr-installation-guides
-📃 Installation guides inspired by the ones I use in the tutorials on my YouTube channel 🎥
+# 👨‍💻 DLR Installation Guides
+
+## 🌐 Languages
+* English
+* [Spanish](./README.es.md)
+
+## 💽 Distros
+* [Artix Base Runit - rEFInd](./distros/artix-base-runit/artix-base-nunit.md)
