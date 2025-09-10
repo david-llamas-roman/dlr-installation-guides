@@ -18,10 +18,12 @@
     - [Locales](#locales)
     - [Hostname](#hostname)
     - [Crear contraseña para root](#crear-contraseña-para-root)
+  - [Generar initramfs](#generar-initramfs)
   - [Instalar rEFInd](#instalar-refind)
   - [Configurar red (runit)](#configurar-red-runit)
   - [Crear usuario y añadirlo al sudoers](#crear-usuario-y-añadirlo-al-sudoers)
   - [Salir, desmontar y reiniciar](#salir-desmontar-y-reiniciar)
+  - [Instalar Emulador de Terminal (Alacritty), Tiling Window Manager (DWM) y Gestor de pantalla y sesiones (LightDM)](#instalar-emulador-de-terminal-alacritty-tiling-window-manager-dwm-y-gestor-de-pantalla-y-sesiones-lightdm)
 
 ## Introducción
 ¿Quieres instalar Artix Base Runit y no sabes por dónde empezar? Pues estás en el lugar indicado. Como habrás podido leer en el [README](../../README.es.md) del repositorio, si tenemos una guía de instalación de un sistema operativo, tenemos un tutorial en [YouTube](). Si entras y lo ves, podrás comprobar que hemos llevado a cabo la instalación de la distro anteriormente mencionada en una máquina virtual (utilizando [Oracle VirtualBox](https://www.virtualbox.org/)), eso no quita que tú no puedas instalarlo en un PC o portátil. La única diferencia es que antes tendrás que crear un USB booteable, para ello podrás usar programas como:
@@ -266,6 +268,15 @@ passwd
 ```
 Este comando sirve para crear una contraseña a un usuario en específico, en este caso que no escribimos ningún nombre a la derecha del mismo, al root.
 
+## Generar initramfs
+Cuando instalamos un kernel en una distro basada en Arch como es Artix (en este caso, Base Runit), el sistema, aparte de copiar el binario del kernel, necesita un **initramfs** (initial RAM filesystem). Lo último mencionado, es un archivo comprimido que cuenta con los módulos básicos del kernel, los hooks de arranque y la configuración necesaria para que el sistema pueda montar el **root filesystem** (/).
+
+Por lo tanto, tenemos que ejecutar el siguiente comando:
+```bash
+mkinitcpio -P
+```
+Este comando, genera **initramfs** para todos los kernels instalados en el sistema.
+
 ## Instalar rEFInd
 ```bash
 pacman -S refind efibootmgr
@@ -279,12 +290,9 @@ Este comando sirve para copiar los archivos de rEFInd a la partición EFI y lo r
 
 ## Configurar red (runit)
 ```bash
-mkdir -p /run/runit/service
+sudo ln -s /etc/runit/sv/dhcpcd /etc/runit/runsvdir/default/
 ```
-```bash
-ln -s /etc/runit/sv/dhcpcd /run/runit/service
-```
-Con estos 2 comandos, activamos el servicio de red dhcpcd en runit para, que al arrancar el sistema, se pida IP automáticamente y se tenga internet.
+Con este comando, activamos el servicio de red dhcpcd en runit para, que al arrancar el sistema, se pida IP automáticamente y se tenga internet.
 
 ## Crear usuario y añadirlo al sudoers
 ```bash
@@ -325,3 +333,82 @@ De esta manera, desactivamos el swap que activamos en pasos anteriores.
 reboot
 ```
 Por último, reiniciamos.
+
+## Instalar Emulador de Terminal (Alacritty), Tiling Window Manager (DWM) y Gestor de pantalla y sesiones (LightDM)
+Actualmente, el sistema operativo arranca en TTY (interfaces de terminal que permiten a los usuarios interactuar con el sistema operativo) y nosotros queremos que tenga un inicio de sesión gráfico, un titling window manager y nuestro emulador de terminal favorito. Para ello, en primer lugar, tenemos que instalar un servidor gráfico (la base para el entorno de escritorio gráfico, GUI, en sistemas operativos tipo Unix). En este caso, instalaremos **Xorg**, ya que **DWM** (el tiling window manager que vamos a instalar) únicamente es compatible con este y no con otros como **Wayland**.
+
+```bash
+sudo pacman -Syu # para actualizar el sistema operativo antes de realizar la instalación de todo lo que viene a continuación
+```
+
+```bash
+sudo pacman -S xorg-server xorg-xinit xorg-xrandr xorg-xsetroot alacritty
+```
+
+Para probar el servidor gráfico, tenemos que ejecutar el siguiente comando:
+```bash
+startx
+```
+Una vez lo hemos ejecutado y hemos visto que funciona, tenemos que salir para continuar con la instalación:
+```bash
+exit
+```
+
+Ahora, antes de instalar **DWM**, tenemos que instalar las dependencias que dicho tiling window manager necesita:
+```bash
+sudo pacman -S git libxft libxinerama
+```
+
+Una vez hemos instalado las dependencias necesarias para el tiling window manager anteriormente mencionado, tenemos que obtener su codigo fuente, pero antes vamos a crear el directorio **.config**:
+```bash
+mkdir ~/.config
+```
+
+```bash
+git clone git://git.suckless.org/dwm ~/.config/dwm
+```
+```bash
+git clone git://git.suckless.org/st ~/.config/st
+```
+```bash
+git clone git://git.suckless.org/dmenu ~/.config/dmenu
+```
+
+```bash
+cd ~/.config/dwm && sudo make install
+```
+```bash
+cd ~/.config/st && sudo make install
+```
+```bash
+cd ~/.config/dmenu && sudo make install
+```
+
+Ya tendríamos instalado **DWM**, a continuación, instalaremos el gestor de pantalla y sesiones **LightDM**:
+```bash
+sudo pacman -S lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
+```
+
+Ahora, tenemos que activar el servicio **lightdm**:
+```bash
+sudo ln -s /etc/runit/sv/lightdm /etc/runit/runsvdir/default/
+```
+
+Por último, tenemos que agregar **DWM** al menú de sesiones del gestor de pantalla y sesiones (en este caso **LightDM**):
+```bash
+mkdir /usr/share/xsessions
+```
+```bash
+nano /usr/share/xsessions/dwm.desktop
+```
+
+Una vez hemos abierto el archivo para editarlo, añadimos lo siguiente:
+```bash
+[Desktop Entry]
+Encoding=UTF-8
+Name=Dwm
+Comment=the dynamic window manager
+Exec=dwm
+Icon=dwm
+Type=XSession
+```
