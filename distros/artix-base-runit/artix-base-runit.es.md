@@ -3,6 +3,7 @@
   - [Introducción](#introducción)
   - [Descargar ISO](#descargar-iso)
     - [Problemas con la versión de 2025 de la ISO](#problemas-con-la-versión-de-2025-de-la-iso)
+    - [Lowmem Version](#lowmem-version)
   - [Pantalla Inicial (antes del login)](#pantalla-inicial-antes-del-login)
   - [Login](#login)
   - [Particionado de la unidad de almacenamiento](#particionado-de-la-unidad-de-almacenamiento)
@@ -47,6 +48,9 @@ Entonces, ¿qué hacemos? ¿No instalamos la distro y ya está?
 No, lo más sencillo en este caso es recurrir a una distro antigua de Artix Base Runit. En este caso, yo he llevado a cabo la instalación con la versión de 2024, en esta ISO no se presenta el problema que hemos explicado unas líneas atrás.
 
 La ISO de 2024 se encuentra en [la misma página de descargas](https://artixlinux.org/download.php), pero en la sección **Old and archived ISO images**, concretamente, en **Old ISO images (click to expand)** dentro de **base**.
+
+### Lowmem Version
+Existe una apartado en la [página web de Artix donde hay **Testing ISO downloads**](https://iso.artixlinux.org/testing-isos.php), aquí, podemos encontrar una versión de dicha distro que se basa en Arch low-memory.
 
 ## Pantalla Inicial (antes del login)
 <img src="./screenshots/screenshot-1.png" alt="Pantalla Inicial Artix Base Runit">
