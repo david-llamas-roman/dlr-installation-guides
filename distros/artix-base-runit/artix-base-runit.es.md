@@ -5,7 +5,9 @@
     - [Problemas con la versión de 2025 de la ISO](#problemas-con-la-versión-de-2025-de-la-iso)
     - [Lowmem Version](#lowmem-version)
   - [Pantalla Inicial (antes del login)](#pantalla-inicial-antes-del-login)
+    - [Lowmem Version](#lowmem-version-1)
   - [Login](#login)
+    - [Lowmem Version](#lowmem-version-2)
   - [Particionado de la unidad de almacenamiento](#particionado-de-la-unidad-de-almacenamiento)
     - [¿Cómo sabemos si nuestra unidad de almacenamiento es /dev/sda?](#cómo-sabemos-si-nuestra-unidad-de-almacenamiento-es-devsda)
     - [¿Qué particiones crear y por qué?](#qué-particiones-crear-y-por-qué)
@@ -50,12 +52,23 @@ No, lo más sencillo en este caso es recurrir a una distro antigua de Artix Base
 La ISO de 2024 se encuentra en [la misma página de descargas](https://artixlinux.org/download.php), pero en la sección **Old and archived ISO images**, concretamente, en **Old ISO images (click to expand)** dentro de **base**.
 
 ### Lowmem Version
-Existe una apartado en la [página web de Artix donde hay **Testing ISO downloads**](https://iso.artixlinux.org/testing-isos.php), aquí, podemos encontrar una versión de dicha distro que se basa en Arch low-memory.
+Existe una apartado en la [página web de Artix donde hay **Testing ISO downloads**](https://iso.artixlinux.org/testing-isos.php), aquí, podemos encontrar una versión de dicha distro que se basa en Arch low-memory. También se puede encontrar esta sección de **Testing ISO downloads** de cara al final de la [página web oficial de Artix](https://artixlinux.org/download.php).
+
+> [!WARNING]
+> Esta versión low-memory, al ser de 2021, tiene problemas a la hora de la instalación de distintos paquetes necesarios, llegando a un punto donde **sudo** y **pacman** se rompe. Por lo cual, recomiendo llevar a cabo la instalación con la stable ISO.
+
+> [!NOTE]
+> De todas formas, puedes seguir leyendo la guía. Se han ido poniendo los cambios respecto la instalación normal (stable ISO) y la instalación con la ISO low-memory, pero se llega a un punto donde nos es imposible continuar con la versión low-memory y se continua con la versión stable.
 
 ## Pantalla Inicial (antes del login)
 <img src="./screenshots/screenshot-1.png" alt="Pantalla Inicial Artix Base Runit">
 
 Aquí, lo que tenemos que hacer es ir cambiando el ***time zone (tz)***, el ***idioma del teclado (keytable)*** y el ***idioma de la distro (lang)*** en caso de no estar a nuestro gusto. Por ejemplo, yo el ***idioma de la distro (lang)*** lo he mantenido en inglés, sin embargo, he cambiado el ***time zone (tz)*** y el ***idioma del teclado (keytable)***.
+
+### Lowmem Version
+<img src="./screenshots/screenshot-3.png" alt="Pantalla Inicial Artix Base Runit Lowmem">
+
+En el caso de la versión low-memory, tenemos un estilo en la pantalla inicial algo diferente, pero, al fin y al cabo, es exactamente lo mismo.
 
 >[!NOTE]
 > En este menú inicial nos tenemos mover con el teclado.
@@ -71,10 +84,27 @@ user = 'root'
 password = 'artix'
 ```
 
+### Lowmem Version
+<img src="./screenshots/screenshot-4.png" alt="Artix Base Runit Login">
+
+En el caso de la versión low-memory, en el login inicial no podemos iniciar sesión como superusuario. Iniciamos sesión con las siguientes credenciales:
+```bash
+user = 'artix'
+password = 'artix'
+```
+
+> [!IMPORTANT]
+> Al no estar como superusuario (root), tendremos que ejecutar todo con **sudo** o elevarnos a superusuario con **sudo su**.
+
 ## Particionado de la unidad de almacenamiento
 Para el particionado de la unidad de almacenamiento, vamos a utilizar una herramienta con una interfaz de tipo texto como es **cfdisk**. Para entrar a crear particiones en nuestra unidad, tenemos que introducir el siguiente comando:
 ```bash
 cfdisk /dev/sda
+```
+
+En el caso de la versión low-memory, tenemos que hacer lo mismo, pero con **sudo**:
+```bash
+sudo cfdisk /dev/sda
 ```
 
 ### ¿Cómo sabemos si nuestra unidad de almacenamiento es /dev/sda?
@@ -124,6 +154,92 @@ Una vez que ya sabemos los formatos a los que tenemos que formatear cada partici
   ```bash
   mkfs.ext4 /dev/sda4
   ```
+
+En el caso de la versión low-memory, tenemos que hacer lo siguiente:
+* **/ (root) - EXT4**
+  ```bash
+  sudo mkfs.ext4 /dev/sda3
+  ```
+* **/home - EXT4**
+  ```bash
+  sudo mkfs.ext4 /dev/sda4
+  ```
+* **Swap**
+  ```bash
+  sudo mkswap /dev/sda2
+  ```
+
+No hemos formateado la partición **EFI** debido a que esta versión de Artix Base Runit viene sin tener pre-instaladas muchas herramientas, entre ellas, **dosfstools**. Dicha herramienta es la que trae el **mkfs.fat -F32** para formatear la partición **EFI** a **FAT32**.
+```bash
+sudo pacman -S dosfstools
+```
+
+Cuando intentamos llevar a cabo la instalación de dicho paquete, nos salta el siguiente mensaje de warning:
+```bash
+warning: database file for 'system' does not exist (use '-Sy' to download)
+warning: database file for 'world' does not exist (use '-Sy' to download)
+warning: database file for 'galaxy' does not exist (use '-Sy' to download)
+warning: database file for 'extra' does not exist (use '-Sy' to download)
+warning: database file for 'community' does not exist (use '-Sy' to download)
+error: target not found: dosfstools
+```
+
+Esto ocurre porque las bases de datos que está reconociendo **pacman** no están en esta versión de Artix, por lo cual, lo que hay que hacer es editar el archivo de configuración de dicho gestor de paquetes para que se dejen de reconocer.
+```bash
+sudo nano /etc/pacman.conf
+```
+
+Y lo que tenemos que hacer es comentar lo siguiente:
+```bash
+[extra]
+Include = /etc/pacman.d/mirrorlist-arch
+
+[community]
+Include = /etc/pacman.d/mirrorlist-arch
+```
+
+Cuando guardamos y salimos del editor, tenemos que ejecutar el siguiente comando para sincronizar las bases de datos de paquetes:
+```bash
+sudo pacman -Syy
+```
+
+Ahora, ya podemos instalar el paquete **dosfstools**:
+```bash
+sudo pacman -S dosfstools
+```
+
+Una vez que ya tenemos dicho paquete, ya podemos formatear la partición **EFI**. El problema es que siguen apareciendo errores al intentar formatear la partición:
+```bash
+version `GLIBC_2.38' not found
+version `GLIBC_2.34' not found
+version `GLIBC_ABI_DT_RELR' not found
+```
+
+Esto se debe a la antigüedad de esta distro lowmem en concreto, ya que, si hacemos:
+```bash
+sudo pacman -Syyu
+```
+
+Nos aparecen errores debido a que dependencias como **hwids** y **eudev**, con el tiempo, han sido eliminados de los repositorios de paquetes. Entonces, la solución que tenemos es intentar migrar lo desactualizado manualmente, ya que la otra opción sería cambiar la ISO por una más nueva (cosa que no hay en la versión lowmem). Para ello, hacemos lo siguiente:
+```bash
+sudo pacman -Rdd eudev
+```
+```bash
+sudo pacman -Scc
+```
+```bash
+sudo pacman -Sy pacman archlinux-keyring artix-keyring
+```
+
+Una vez hemos hecho esto, nos damos cuenta que **sudo** y **pacman** han dejado de funcionar. Esto se debe a que nuestra **glibc** tiene la versión 2.33. Cuando se ha ejecutado el último comando mencionado, se han descargado paquetes para **glibc** 2.34, 2.38... que requieren de funciones que la versión que nosotros tenemos no tiene. Lo que obtenemos de todo esto es que, cuando intentamos usar **sudo** o **pacman**, nos aparecen cosas com estas:
+```bash
+libcrypto.so.1.1: cannot open shared object file
+```
+Cuando nos aparece un error de este tipo, quiere decir que no podemos cargar **sudo** o **pacman** debido a sus dependencias a librerías que, en nuestro sistema, no existen.
+
+Llegados a este punto, donde está siendo muy complicado avanzar con la versión low-memory, no vamos a avanzar con dicha versión y vamos a continuar con la instalación para las stable ISO (dejamos la resolución de esto para próximas entregas).
+
+En cualquier caso, si sabes cómo se soluciona esto o cómo instalar la versión low-memory por completo, te animo a contactarme o a ponerme un comentario en el vídeo de Artix Base Runit de mi canal de YouTube para saber en qué estamos fallando, qué es lo que nos falta y demás.
 
 ### Montar particiones
 Cuando ya tenemos las particiones creadas y formateadas, necesitamos montarlas. Montar cada partición es necesario para que el sistema las utilice, ya que, Linux, organiza todo dentro de un árbol único de directorios que empiezan en ***/*** y, por defecto, las particiones no vienen asignadas a un elemento específico del árbol, eso lo tenemos que hacer nosotros.
