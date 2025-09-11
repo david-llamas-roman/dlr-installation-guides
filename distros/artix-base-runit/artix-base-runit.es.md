@@ -532,3 +532,26 @@ Exec=dwm
 Icon=dwm
 Type=XSession
 ```
+
+Por útlimo, lo que vamos a hacer es cambiar el emulador de terminal que **DWM** tiene por defecto, en este caso, **st**.
+```bash
+sudo nano ~/.config/dwm/config.h
+```
+
+Y cambiamos la siguiente línea:
+```bash
+static const char *termcmd[]  = { "st", NULL };
+```
+
+Por esta otra:
+```bash
+static const char *termcmd[]  = { "alacritty", NULL };
+```
+
+Y recompilamos posicionándonos en el directorio **~/.config/dwm**:
+```bash
+cd ~/.config/dwm
+```
+```bash
+sudo make clean install
+```
