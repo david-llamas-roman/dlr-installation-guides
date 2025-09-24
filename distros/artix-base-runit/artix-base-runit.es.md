@@ -408,6 +408,11 @@ refind-install
 ```
 Este comando sirve para copiar los archivos de rEFInd a la partición EFI y lo registra en el firmware para que el ordenador pueda arrancar.
 
+A continuación, lo que tenemos que hacer es ver el UUID de nuestra partición raíz (/) y ponerlo en el archivo de configuración **/boot/refind_linux.conf**, tanto en la primera línea como en la segunda:
+```bash
+blkid
+```
+
 ## Configurar red (runit)
 ```bash
 sudo ln -s /etc/runit/sv/dhcpcd /etc/runit/runsvdir/default/
@@ -445,11 +450,6 @@ umount -R /mnt
 Con el comando anterior desmontamos todas las particiones de la unidad de almacenamiento.
 
 ```bash
-swapoff -a
-```
-De esta manera, desactivamos el swap que activamos en pasos anteriores.
-
-```bash
 reboot
 ```
 Por último, reiniciamos.
@@ -462,7 +462,7 @@ sudo pacman -Syu # para actualizar el sistema operativo antes de realizar la ins
 ```
 
 ```bash
-sudo pacman -S xorg-server xorg-xinit xorg-xrandr xorg-xsetroot alacritty
+sudo pacman -S xorg-server xorg-xinit xorg-xrandr xorg-xsetroot xterm alacritty
 ```
 
 Para probar el servidor gráfico, tenemos que ejecutar el siguiente comando:
@@ -516,10 +516,10 @@ sudo ln -s /etc/runit/sv/lightdm /etc/runit/runsvdir/default/
 
 Por último, tenemos que agregar **DWM** al menú de sesiones del gestor de pantalla y sesiones (en este caso **LightDM**):
 ```bash
-mkdir /usr/share/xsessions
+sudo mkdir /usr/share/xsessions
 ```
 ```bash
-nano /usr/share/xsessions/dwm.desktop
+sudo nano /usr/share/xsessions/dwm.desktop
 ```
 
 Una vez hemos abierto el archivo para editarlo, añadimos lo siguiente:
