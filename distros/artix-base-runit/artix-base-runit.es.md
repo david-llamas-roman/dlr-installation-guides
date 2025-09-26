@@ -412,6 +412,15 @@ A continuación, lo que tenemos que hacer es ver el UUID de nuestra partición r
 ```bash
 blkid
 ```
+Una vez hemos sacado el UUID de nuestra partición raíz (/), vamos a editar el siguiente archivo:
+```bash
+nano /boot/refind_linux.conf
+```
+Y añadimos el UUID en la primera y en la segunda línea:
+```bash
+"Boot with standard options" "lang=en_US keytable=es tz=Europe/Madrid label=ARTIX_202408 root=UUID=[...]"
+"Boot to single-user mode" "lang=en_US keytable=es tz=Europe/Madrid label=ARTIX_202408 root=UUID=[...] single"
+```
 
 ## Configurar red (runit)
 ```bash
@@ -432,7 +441,9 @@ Con estos 2 comandos creamos un usuario normal y lo añadimos al grupo wheel (ad
 pacman -S nano
 ```
 En el caso de que ya tengamos nano instalado, podemos omitir este comando, pero, si no, tenemos que ejecutarlo para instalar el editor anteriormente mencionado.
-
+```bash
+nano /etc/sudoers
+```
 ```bash
 %wheel ALL=(ALL) ALL
 ```
@@ -555,3 +566,40 @@ cd ~/.config/dwm
 ```bash
 sudo make clean install
 ```
+
+Por útlimo, vamos a tener que crear el directorio donde se va a encontrar el script de ejecución de lightdm:
+```bash
+sudo mkdir -p /etc/runit/sv/lightdm
+```
+Una vez tenemos el directorio, creamos el archivo que va a contener el script:
+```bash
+sudo nano /etc/runit/sv/lightdm/run
+```
+En dicho directorio, tenemos que añadir la siguiente línea:
+```bash
+exec 2>&1
+
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export LANG=en_US.UTF-8
+export HOME=/root
+export XDG_RUNTIME_DIR=/run/lightdm
+
+install -d -m 0700 -o root -g root /run/lightdm
+
+exec /usr/sbin/lightdm
+```
+Una vez que guardamos el archivo y salimos, tenemos que darle permisos de ejecución:
+```bash
+sudo chmod +x /etc/runit/sv/lightdm/run
+```
+EL penúltimo paso sería crear el link con el directorio de inicio de servicios "por defecto" (junto al inicio del sistema):
+```bash
+sudo ln -s /etc/runit/sv/lightdm /etc/runit/runsvdir/default/
+```
+Y levantamos el servicio:
+```bash
+sudo sv start lightdm
+```
+
+> [!WARNING]
+> No he conseguido que lightdm arranque junto al sistema operativo. Con el archivo run que hemos visto anteriormente únicamente me ha arrancado 1 vez el servicio de lightdm y, al reinciar, ya no ha arrancado más. Es mi primera vez con runit y no sé que es lo que pasa, tampoco encuentro información sobre el inconveniente que estamos teniendo con Artix Base Runit y LightDM. En caso de que sepas cómo solucionar el error, te invito a hacer una PR o, en su defecto, a hacérmelo saber a través de algún medio de comunicación (YouTube, TikTok, LinkedIn...).
