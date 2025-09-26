@@ -5,4 +5,4 @@
 * [Spanish](./README.es.md)
 
 ## 💽 Distros
-* [Artix Base Runit - rEFInd](./distros/artix-base-runit/artix-base-nunit.md)
+* [Artix Base Runit (low-memory & stable) - Linux Zen, rEFInd, DWM & LightDM](./distros/artix-base-runit/artix-base-nunit.md)
