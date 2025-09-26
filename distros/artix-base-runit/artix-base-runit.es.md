@@ -27,6 +27,7 @@
   - [Crear usuario y añadirlo al sudoers](#crear-usuario-y-añadirlo-al-sudoers)
   - [Salir, desmontar y reiniciar](#salir-desmontar-y-reiniciar)
   - [Instalar Emulador de Terminal (Alacritty), Tiling Window Manager (DWM) y Gestor de pantalla y sesiones (LightDM)](#instalar-emulador-de-terminal-alacritty-tiling-window-manager-dwm-y-gestor-de-pantalla-y-sesiones-lightdm)
+  - [Configurar el idioma de teclado](#configurar-el-idioma-de-teclado)
 
 ## Introducción
 ¿Quieres instalar Artix Base Runit y no sabes por dónde empezar? Pues estás en el lugar indicado. Como habrás podido leer en el [README](../../README.es.md) del repositorio, si tenemos una guía de instalación de un sistema operativo, tenemos un tutorial en [YouTube](). Si entras y lo ves, podrás comprobar que hemos llevado a cabo la instalación de la distro anteriormente mencionada en una máquina virtual (utilizando [Oracle VirtualBox](https://www.virtualbox.org/)), eso no quita que tú no puedas instalarlo en un PC o portátil. La única diferencia es que antes tendrás que crear un USB booteable, para ello podrás usar programas como:
@@ -603,3 +604,13 @@ sudo sv start lightdm
 
 > [!WARNING]
 > No he conseguido que lightdm arranque junto al sistema operativo. Con el archivo run que hemos visto anteriormente únicamente me ha arrancado 1 vez el servicio de lightdm y, al reinciar, ya no ha arrancado más. Es mi primera vez con runit y no sé que es lo que pasa, tampoco encuentro información sobre el inconveniente que estamos teniendo con Artix Base Runit y LightDM. En caso de que sepas cómo solucionar el error, te invito a hacer una PR o, en su defecto, a hacérmelo saber a través de algún medio de comunicación (YouTube, TikTok, LinkedIn...).
+
+## Configurar el idioma de teclado
+Para terminar, tenemos que configurar el idioma del teclado para evitar tener que hacer un **sudo loadkeys es** cada vez que iniciamos el sistema. Para ello, tenemos que editar el siguiente archivo:
+```bash
+sudo nano /etc/vconsole.conf
+``` 
+Y añadimos lo siguiente:
+```bash
+KEYMAP=es
+```
