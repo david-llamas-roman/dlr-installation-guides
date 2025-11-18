@@ -2,7 +2,6 @@
 - [🤔 ¿Cómo Instalar Artix Base Runit?](#-cómo-instalar-artix-base-runit)
   - [Introducción](#introducción)
   - [Descargar ISO](#descargar-iso)
-    - [Problemas con la versión de 2025 de la ISO](#problemas-con-la-versión-de-2025-de-la-iso)
     - [Lowmem Version](#lowmem-version)
   - [Pantalla Inicial (antes del login)](#pantalla-inicial-antes-del-login)
     - [Lowmem Version](#lowmem-version-1)
@@ -37,20 +36,27 @@
 ## Descargar ISO
 Para descargar la ISO, vamos a ir a la [sección de descargas de la web oficial de Artix](https://artixlinux.org/download.php). Acto seguido, nos desplazamos hacia abajo hasta encontrar la sección **Official ISO images** y la tenemos en **Stable ISO images** dentro de **base** (_artix-base-runit-[...]-x86_64.iso_).
 
-### Problemas con la versión de 2025 de la ISO
-Una vez tenía descargada la ISO y me disponía a instalar la distro, me topé con un problema, "Login incorrect". En esta distro, es necesario iniciar sesión con un usuario y contraseña que Artix nos aporta para continuar con la instalación, pues en la versión de 2025 de la ISO, da error con cualquier combinación de contraseña y password.
-```bash
-user = 'root' or 'artix'
-password = 'artix'
-```
+> [!WARNING]
+> Este despegable y su contenido únicamente aplica a la versión de la ISO **artix-base-runit-20250825**. El error del que se habla me ocurrió en torno al 26/08/2025.
 
-Estuve buscando información sobre el error y sus posibles soluciones, pero, al parecer, no hay nada que hacer hasta que no lo arreglen. No sé exactamente si soy la única persona que se ha topado con dicho error, en caso de estar equivocándome y de existir una solución, ante todo pido disculpas y te animo a hacérmela llegar (nunca es tarde para aprender).
+<details>
+  <summary>Problemas con la versión de 2025 de la ISO</summary>
 
-Entonces, ¿qué hacemos? ¿No instalamos la distro y ya está?
+  Una vez tenía descargada la ISO y me disponía a instalar la distro, me topé con un problema, "Login incorrect". En esta distro, es necesario iniciar sesión con un usuario y contraseña que Artix nos aporta para continuar con la instalación, pues en la versión de 2025 de la ISO, da error con cualquier combinación de usuario y password.
+  ```bash
+  user = 'root' or 'artix'
+  password = 'artix'
+  ```
 
-No, lo más sencillo en este caso es recurrir a una distro antigua de Artix Base Runit. En este caso, yo he llevado a cabo la instalación con la versión de 2024, en esta ISO no se presenta el problema que hemos explicado unas líneas atrás.
+  Estuve buscando información sobre el error y sus posibles soluciones, pero, al parecer, no hay nada que hacer hasta que no lo arreglen. No sé exactamente si soy la única persona que se ha topado con dicho error, en caso de estar equivocándome y de existir una solución, ante todo pido disculpas y te animo a hacérmela llegar (nunca es tarde para aprender).
 
-La ISO de 2024 se encuentra en [la misma página de descargas](https://artixlinux.org/download.php), pero en la sección **Old and archived ISO images**, concretamente, en **Old ISO images (click to expand)** dentro de **base**.
+  Entonces, ¿qué hacemos? ¿No instalamos la distro y ya está?
+
+  No, lo más sencillo en este caso es recurrir a una versión antigua de Artix Base Runit. En este caso, yo he llevado a cabo la instalación con la versión de 2024, en esta ISO no se presenta el problema que hemos explicado unas líneas atrás.
+
+  La ISO de 2024 se encuentra en [la misma página de descargas](https://artixlinux.org/download.php), pero en la sección **Old and archived ISO images**, concretamente, en **Old ISO images (click to expand)** dentro de **base**.
+</details>
+
 
 ### Lowmem Version
 Existe una apartado en la [página web de Artix donde hay **Testing ISO downloads**](https://iso.artixlinux.org/testing-isos.php), aquí, podemos encontrar una versión de dicha distro que se basa en Arch low-memory. También se puede encontrar esta sección de **Testing ISO downloads** de cara al final de la [página web oficial de Artix](https://artixlinux.org/download.php).
